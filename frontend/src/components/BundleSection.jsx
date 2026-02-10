@@ -1,3 +1,5 @@
+import React from 'react'
+
 import { motion } from 'framer-motion';
 import { Plus, ShoppingBag } from 'lucide-react';
 import { useDispatch } from 'react-redux';
@@ -64,3 +66,5 @@ const BundleSection = ({ currentProduct, matchingProduct }) => {
     </section>
   );
 };
+
+export default BundleSection

@@ -4,41 +4,36 @@
   /* Brand Colors */
   --color-brand-dark: #1A1A1A;
   --color-brand-light: #FAFAFA;
-  --color-brand-gold: #B8860B; /* Deeper gold for better legibility */
+  --color-brand-gold: #B8860B;
 
   /* Typography */
   --font-serif: "Playfair Display", serif;
   --font-sans: "Inter", sans-serif;
 
-  /* Custom Animations & Shadows */
+  /* Custom Transitions */
   --default-transition-duration: 500ms;
   --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* Luxury Shadow for Text Legibility */
-  --drop-shadow-luxury: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Base Styles */
 @layer base {
   body {
-    @apply antialiased text-brand-dark bg-brand-light selection:bg-brand-gold/20;
+    @apply antialiased bg-brand-light text-brand-dark selection:bg-brand-gold/20;
     font-family: var(--font-sans);
   }
 
-  h1, h2, h3, h4, .font-serif {
+  /* Force Serif for Headings */
+  h1, h2, h3, h4, .serif-luxury {
     font-family: var(--font-serif);
+    @apply tracking-tight;
   }
 }
 
-/* Custom Utilities for the Bean & Vanilla Look */
-@utility text-shadow-subtle {
-  filter: drop-shadow(var(--drop-shadow-luxury));
+@utility transition-luxury {
+  transition: all var(--default-transition-duration) var(--default-transition-timing-function);
 }
 
-@utility transition-luxury {
-  transition-property: all;
-  transition-duration: var(--default-transition-duration);
-  transition-timing-function: var(--default-transition-timing-function);
+@utility text-shadow-luxury {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 button {

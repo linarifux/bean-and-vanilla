@@ -7,6 +7,8 @@ import Press from '../components/Press';
 import Ensemble from '../components/Ensemble';
 import Timeline from '../components/Timeline';
 import SocialFeed from '../components/SocialFeed';
+import GiftGuide from '../components/GiftGuide'; // Added back
+import Atelier from '../components/Atelier';
 
 const HomeScreen = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -17,11 +19,11 @@ const HomeScreen = () => {
     setIsQuickViewOpen(true);
   };
 
-  // Mock Data (To be replaced by RTK Query later)
+  // Mock Data
   const watches = [
     { _id: '1', name: 'Original Sandalwood Watch', price: 185, category: 'Watches', material: 'Sandalwood', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1999' },
-    { _id: '4', name: 'Heritage Wood Watch', price: 210, category: 'Watches', material: 'Koa Wood', image: 'https://images.unsplash.com/photo-1434056886845-dac89faf9b17?q=80&w=2070' },
-    { _id: '5', name: 'Midnight Ebony Series', price: 225, category: 'Watches', material: 'Ebony', image: 'https://images.unsplash.com/photo-1508685096489-7a316bd4741e?q=80&w=2000' },
+    { _id: '4', name: 'Heritage Wood Watch', price: 210, category: 'Watches', material: 'Koa Wood', image: 'https://images.squarespace-cdn.com/content/v1/58e48ca2e3df281cebd9a61c/1524513782007-FFISZDKR76HUMJVLERE8/watch7-1.jpg?format=750w' },
+    { _id: '5', name: 'Midnight Ebony Series', price: 225, category: 'Watches', material: 'Ebony', image: 'https://images.squarespace-cdn.com/content/v1/58e48ca2e3df281cebd9a61c/1524685535658-6X90C53QEVOVD4ZHGRY6/watch81.jpg?format=750w' },
     { _id: '6', name: 'Oceanic Blue Diver', price: 250, category: 'Watches', material: 'Maple', image: 'https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?q=80&w=2000' },
   ];
 
@@ -41,22 +43,18 @@ const HomeScreen = () => {
     >
       <Hero />
 
-      {/* World Class Trust Section */}
+      {/* 1. Instant Social Proof & Trust */}
       <Press />
 
-      {/* Watches Collection Slider */}
+      {/* 2. Primary Collection Discovery */}
       <FeaturedSlider 
         products={watches} 
         title="Signature Timepieces" 
         subtitle="Sustainable Luxury" 
         onQuickView={openQuickView}
       />
-
-
-      {/* Interactive Lookbook Section */}
+      {/* 4. Secondary Collection & Styling */}
       <Ensemble />
-
-      {/* Jewelry Collection Slider */}
       <FeaturedSlider 
         products={jewelry} 
         title="Handcrafted Jewelry" 
@@ -64,7 +62,13 @@ const HomeScreen = () => {
         onQuickView={openQuickView}
       />
 
-      {/* Mid-Page Brand Story Section */}
+      {/* 5. Personal Concierge / Gifting Service */}
+      <GiftGuide />
+
+      {/* 6. Brand Heritage & Storytelling */}
+      <Timeline />
+
+      {/* 7. Mid-Page Visual Brand Story */}
       <section className="relative h-[700px] flex items-center overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <img 
@@ -96,14 +100,10 @@ const HomeScreen = () => {
         </div>
       </section>
 
-      {/* Quick View Modal */}
-      <QuickView 
-        product={selectedProduct} 
-        isOpen={isQuickViewOpen} 
-        onClose={() => setIsQuickViewOpen(false)} 
-      />
+      {/* 8. Social Proof & Lifestyle */}
+      <SocialFeed />
 
-      {/* Enhanced Final Trust Bar */}
+      {/* 9. Final Trust Signals */}
       <section className="py-24 border-t border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 text-center">
           {[
@@ -126,9 +126,13 @@ const HomeScreen = () => {
           ))}
         </div>
       </section>
-      <Timeline />
 
-      <SocialFeed />
+      {/* Global Components */}
+      <QuickView 
+        product={selectedProduct} 
+        isOpen={isQuickViewOpen} 
+        onClose={() => setIsQuickViewOpen(false)} 
+      />
     </motion.div>
   );
 };
