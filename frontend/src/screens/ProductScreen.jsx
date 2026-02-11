@@ -8,7 +8,6 @@ import {
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../slices/cartSlice';
 import BundleSection from '../components/BundleSection';
-import { Toaster, toast } from 'react-hot-toast';
 
 const ProductScreen = () => {
   const { id } = useParams();
@@ -162,25 +161,6 @@ const ProductScreen = () => {
     if (!product) return;
     dispatch(addToCart({ ...product, qty }));
     
-    toast.custom((t) => (
-      <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-sm w-full bg-white shadow-2xl pointer-events-auto flex flex-col border border-gray-100 rounded-sm`}>
-        <div className="p-4 flex items-start gap-4">
-          <div className="flex-shrink-0">
-            <img className="h-16 w-16 object-cover rounded-sm border border-gray-100" src={product.images[0]} alt={product.name} />
-          </div>
-          <div className="flex-1 pt-1">
-            <p className="text-[10px] uppercase tracking-widest text-brand-gold font-bold mb-1">Successfully Added</p>
-            <p className="text-sm font-serif font-medium text-brand-dark leading-tight">{product.name}</p>
-            <p className="mt-1 text-xs text-gray-500">Quantity: {qty}</p>
-          </div>
-          <button onClick={() => toast.dismiss(t.id)} className="text-gray-400 hover:text-brand-dark transition-colors"><X size={16} /></button>
-        </div>
-        <div className="flex border-t border-gray-100">
-          <button onClick={() => { toast.dismiss(t.id); navigate('/shop'); }} className="w-full border-r border-gray-100 p-4 flex items-center justify-center text-[10px] uppercase tracking-widest font-bold text-gray-500 hover:text-brand-dark hover:bg-gray-50 transition-colors">Continue Shopping</button>
-          <button onClick={() => { toast.dismiss(t.id); navigate('/checkout'); }} className="w-full p-4 flex items-center justify-center text-[10px] uppercase tracking-widest font-bold text-brand-gold hover:text-white hover:bg-brand-dark transition-all">Checkout</button>
-        </div>
-      </div>
-    ), { position: "top-right", duration: 5000 });
   };
 
   const handleMouseMove = (e) => {
@@ -212,7 +192,6 @@ const ProductScreen = () => {
 
   return (
     <div className="bg-white overflow-x-hidden font-sans text-brand-dark relative">
-      <Toaster />
 
       {/* 1. PRODUCT HERO */}
       <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
