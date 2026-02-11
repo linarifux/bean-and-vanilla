@@ -3,11 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Minus, ShieldCheck, Truck, RotateCcw, 
-  Star, ChevronDown, ArrowRight, Share2, ThumbsUp, CheckCircle, SlidersHorizontal
+  Star, ChevronDown, ArrowRight, Share2, ThumbsUp, CheckCircle, SlidersHorizontal, X
 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../slices/cartSlice';
 import BundleSection from '../components/BundleSection';
+import { Toaster, toast } from 'react-hot-toast';
 
 const ProductScreen = () => {
   const { id } = useParams();
@@ -17,6 +18,10 @@ const ProductScreen = () => {
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
   const [sortOption, setSortOption] = useState('newest');
+
+  // --- ZOOM STATE ---
+  const [isHovering, setIsHovering] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   // --- 1. MOCK DATABASE ---
   const productsDB = [
@@ -42,7 +47,7 @@ const ProductScreen = () => {
       },
       description: "A masterclass in organic engineering. We’ve paired the architectural strength of 316L surgical steel with the unmatched warmth of reclaimed sandalwood."
     },
-    // ... (Keep other products same as before or fetch from API)
+    // ... other products
     {
       _id: '2',
       name: 'Golden Hour Bracelet',
@@ -85,7 +90,6 @@ const ProductScreen = () => {
     }
   ];
 
-  // --- MOCK REVIEWS DATA ---
   const reviewsList = [
     { id: 1, user: "James D.", rating: 5, date: "October 12, 2023", title: "Exquisite Craftsmanship", content: "The wood grain is even more stunning in person. It feels incredibly light on the wrist but looks substantial. The packaging was also a nice touch.", verified: true, helpful: 12 },
     { id: 2, user: "Sarah L.", rating: 5, date: "September 28, 2023", title: "Perfect Anniversary Gift", content: "Bought this for my husband's 5th anniversary (wood). He hasn't taken it off since. The engraving option was perfect.", verified: true, helpful: 8 },
@@ -95,8 +99,74 @@ const ProductScreen = () => {
   const product = productsDB.find(p => p._id === id) || productsDB[0];
   const suggestedProduct = productsDB.find(p => p._id !== product._id) || productsDB[1];
 
+  // --- HANDLERS ---
   const handleAddToCart = () => {
     dispatch(addToCart({ ...product, qty }));
+    
+    toast.custom((t) => (
+      <div
+        className={`${
+          t.visible ? 'animate-enter' : 'animate-leave'
+        } max-w-sm w-full bg-white shadow-2xl pointer-events-auto flex flex-col border border-gray-100 rounded-sm`}
+      >
+        <div className="p-4 flex items-start gap-4">
+          <div className="flex-shrink-0">
+            <img
+              className="h-16 w-16 object-cover rounded-sm border border-gray-100"
+              src={product.images[0]}
+              alt={product.name}
+            />
+          </div>
+          <div className="flex-1 pt-1">
+            <p className="text-[10px] uppercase tracking-widest text-brand-gold font-bold mb-1">
+              Successfully Added
+            </p>
+            <p className="text-sm font-serif font-medium text-brand-dark leading-tight">
+              {product.name}
+            </p>
+            <p className="mt-1 text-xs text-gray-500">
+              Quantity: {qty}
+            </p>
+          </div>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="text-gray-400 hover:text-brand-dark transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
+        <div className="flex border-t border-gray-100">
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              navigate('/shop-all');
+            }}
+            className="w-full border-r border-gray-100 p-4 flex items-center justify-center text-[10px] uppercase tracking-widest font-bold text-gray-500 hover:text-brand-dark hover:bg-gray-50 transition-colors"
+          >
+            Continue Shopping
+          </button>
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              navigate('/checkout');
+            }}
+            className="w-full p-4 flex items-center justify-center text-[10px] uppercase tracking-widest font-bold text-brand-gold hover:text-white hover:bg-brand-dark transition-all"
+          >
+            Checkout
+          </button>
+        </div>
+      </div>
+    ), { 
+      position: "top-right", 
+      duration: 5000 
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setMousePos({ x, y });
   };
 
   useEffect(() => {
@@ -105,37 +175,61 @@ const ProductScreen = () => {
   }, [id]);
 
   return (
-    <div className="bg-white overflow-x-hidden font-sans text-brand-dark">
-      
+    <div className="bg-white overflow-x-hidden font-sans text-brand-dark relative">
+      <Toaster />
+
       {/* 1. PRODUCT HERO */}
       <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+        
+        {/* Left: Sticky Image Gallery with ZOOM */}
         <div className="relative lg:sticky lg:top-0 h-[60vh] lg:h-screen bg-[#FDFDFD] overflow-hidden group">
-          <AnimatePresence mode="wait">
-            <motion.img 
-              key={product.images[activeImg]}
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              src={product.images[activeImg]} 
-              className="w-full h-full object-cover"
-            />
-          </AnimatePresence>
-          <div className="absolute bottom-8 left-8 flex gap-3 z-10">
+          <div 
+            className="w-full h-full relative overflow-hidden cursor-crosshair"
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+            onMouseMove={handleMouseMove}
+          >
+            <AnimatePresence mode="wait">
+              <motion.img 
+                key={product.images[activeImg]}
+                initial={{ opacity: 0, scale: 1.05 }}
+                animate={{ 
+                  opacity: 1, 
+                  scale: isHovering ? 1.5 : 1, // Scale up on hover
+                  x: isHovering ? `${(50 - mousePos.x) / 2}%` : 0, // Pan X
+                  y: isHovering ? `${(50 - mousePos.y) / 2}%` : 0  // Pan Y
+                }}
+                exit={{ opacity: 0 }}
+                transition={{ 
+                  opacity: { duration: 0.5 },
+                  scale: { duration: 0.4, ease: "easeOut" }, // Smooth zoom
+                  x: { duration: 0.1, ease: "linear" }, // Responsive panning
+                  y: { duration: 0.1, ease: "linear" }  // Responsive panning
+                }}
+                src={product.images[activeImg]} 
+                className="w-full h-full object-cover origin-center" // Ensure origin is center for predictable scaling
+                alt={product.name}
+              />
+            </AnimatePresence>
+          </div>
+
+          {/* Thumbnail Strip */}
+          <div className="absolute bottom-8 left-8 flex gap-3 z-10 pointer-events-none md:pointer-events-auto">
             {product.images.map((img, i) => (
               <button 
                 key={i} 
                 onClick={() => setActiveImg(i)}
-                className={`w-16 h-20 border transition-all duration-300 ${
+                className={`w-12 h-16 md:w-16 md:h-20 border transition-all duration-300 pointer-events-auto ${
                   activeImg === i ? 'border-brand-gold ring-1 ring-brand-gold opacity-100' : 'border-white/50 opacity-70 hover:opacity-100'
                 }`}
               >
-                <img src={img} className="w-full h-full object-cover" />
+                <img src={img} className="w-full h-full object-cover" alt={`Thumbnail ${i}`} />
               </button>
             ))}
           </div>
         </div>
 
+        {/* Right: Product Details & Actions */}
         <div className="p-8 lg:p-24 flex flex-col justify-center border-l border-gray-50 bg-white">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <div className="flex justify-between items-start mb-6">
@@ -244,11 +338,7 @@ const ProductScreen = () => {
       {/* 4. CUSTOMER REVIEWS SECTION */}
       <section className="py-24 px-6 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto">
-          
-          {/* Reviews Header & Summary */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-            
-            {/* Left: Summary Stats */}
             <div className="lg:col-span-4 lg:sticky lg:top-32 h-fit">
               <span className="text-[10px] uppercase tracking-[0.4em] text-brand-gold font-bold mb-6 block">Community</span>
               <h3 className="text-4xl font-serif text-brand-dark mb-8">Reviews & Reflections</h3>
@@ -265,7 +355,6 @@ const ProductScreen = () => {
                 </div>
               </div>
 
-              {/* Breakdown Bars */}
               <div className="space-y-3 mb-10">
                 {[5, 4, 3, 2, 1].map((star) => (
                   <div key={star} className="flex items-center gap-4 text-xs text-gray-500">
@@ -285,20 +374,16 @@ const ProductScreen = () => {
               </button>
             </div>
 
-            {/* Right: Reviews List */}
             <div className="lg:col-span-8">
-              {/* Filter Controls */}
               <div className="flex justify-between items-center border-b border-gray-100 pb-6 mb-10">
                 <span className="text-sm font-bold text-brand-dark">{reviewsList.length} Reviews</span>
                 <div className="relative group">
                   <button className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold text-gray-500 hover:text-brand-dark transition-colors">
                     <SlidersHorizontal size={14} /> Sort: {sortOption} <ChevronDown size={12} />
                   </button>
-                  {/* Dropdown would go here */}
                 </div>
               </div>
 
-              {/* Review Cards */}
               <div className="space-y-12">
                 {reviewsList.map((review, index) => (
                   <motion.div 
