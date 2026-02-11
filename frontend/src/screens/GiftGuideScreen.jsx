@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Heart, Briefcase, GraduationCap, Gift, ArrowRight, 
   ChevronLeft, Sparkles, Share2, User, Users, Gem, 
-  Watch, Loader2, CheckCircle2 
+  Watch, CheckCircle2 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -55,7 +55,7 @@ const GiftGuideScreen = () => {
       options: [
         { value: 'minimalist', label: 'Minimalist', icon: Watch, desc: 'Clean lines, understated.' },
         { value: 'statement', label: 'Statement', icon: Gem, desc: 'Bold, unique, eye-catching.' },
-        { value: 'classic', label: 'Timeless', icon: Sparkles, desc: 'Heritage, traditional, refined.' },
+        { value: 'classic', label: 'Timeless', icon: Sparkles, desc: 'Heritage, traditional.' },
       ]
     },
     {
@@ -77,11 +77,10 @@ const GiftGuideScreen = () => {
     if (step < 4) {
       setStep(prev => prev + 1);
     } else {
-      // Trigger "Processing" state before final result
       setIsProcessing(true);
       setTimeout(() => {
         setIsProcessing(false);
-        setStep(5); // Move to Reveal Screen
+        setStep(5); 
       }, 2500);
     }
   };
@@ -91,7 +90,6 @@ const GiftGuideScreen = () => {
   };
 
   const finalizeCuration = () => {
-    // Pass all parameters to the curation page
     const params = new URLSearchParams(selections).toString();
     navigate(`/curation?${params}`);
   };
@@ -104,29 +102,29 @@ const GiftGuideScreen = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // --- Render Helpers ---
   const currentQuestion = questions.find(q => q.id === step);
 
   return (
-    <section className="min-h-screen bg-[#050505] text-white relative overflow-hidden flex flex-col">
+    // Updated: min-h-[100dvh] fixes mobile browser height issues
+    <section className="min-h-[100dvh] bg-[#050505] text-white relative overflow-hidden flex flex-col py-6">
       
       {/* Dynamic Background Elements */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-brand-gold/5 blur-[150px] -z-10 pointer-events-none animate-pulse" />
-      <div className="absolute bottom-0 left-0 w-1/3 h-2/3 bg-blue-900/5 blur-[120px] -z-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-brand-gold/5 blur-[100px] md:blur-[150px] -z-10 pointer-events-none animate-pulse" />
+      <div className="absolute bottom-0 left-0 w-full md:w-1/3 h-1/2 md:h-2/3 bg-blue-900/5 blur-[80px] md:blur-[120px] -z-10 pointer-events-none" />
       
       {/* Navbar Placeholder / Back Button */}
-      <div className="absolute top-8 left-6 z-50">
+      <div className="w-full max-w-6xl mx-auto px-6 mb-8 z-50">
         <button 
           onClick={() => step === 1 ? navigate('/') : handleBack()}
-          className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-gray-400 hover:text-brand-gold transition-colors"
+          className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-gray-400 hover:text-brand-gold transition-colors py-2"
         >
           <ChevronLeft size={16} /> {step === 1 ? 'Exit Concierge' : 'Previous Step'}
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center max-w-6xl mx-auto px-6 w-full relative z-10">
+      <div className="flex-1 flex flex-col items-center justify-center max-w-6xl mx-auto px-4 sm:px-6 w-full relative z-10">
         
-        {/* --- LOADING STATE (The "Thinking" Phase) --- */}
+        {/* --- LOADING STATE --- */}
         <AnimatePresence mode="wait">
           {isProcessing ? (
             <motion.div 
@@ -134,18 +132,18 @@ const GiftGuideScreen = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="text-center"
+              className="text-center px-4"
             >
               <div className="relative inline-flex items-center justify-center mb-8">
                 <motion.div 
                   animate={{ rotate: 360 }}
                   transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                  className="w-24 h-24 border border-brand-gold/20 border-t-brand-gold rounded-full"
+                  className="w-20 h-20 md:w-24 md:h-24 border border-brand-gold/20 border-t-brand-gold rounded-full"
                 />
-                <Sparkles className="absolute text-brand-gold" size={32} />
+                <Sparkles className="absolute text-brand-gold" size={24} />
               </div>
-              <h3 className="text-3xl font-serif italic mb-2">Consulting the Archives</h3>
-              <p className="text-gray-500 text-sm tracking-widest uppercase">Curating based on your choices...</p>
+              <h3 className="text-2xl md:text-3xl font-serif italic mb-2">Consulting the Archives</h3>
+              <p className="text-gray-500 text-xs md:text-sm tracking-widest uppercase">Curating based on your choices...</p>
             </motion.div>
           ) : step === 5 ? (
             /* --- FINAL REVEAL SCREEN --- */
@@ -153,31 +151,30 @@ const GiftGuideScreen = () => {
               key="reveal"
               initial={{ opacity: 0, scale: 0.95 }} 
               animate={{ opacity: 1, scale: 1 }}
-              className="text-center w-full max-w-3xl border border-brand-gold/20 bg-brand-gold/[0.02] p-12 md:p-20 backdrop-blur-3xl shadow-[0_40px_100px_rgba(0,0,0,0.5)] relative overflow-hidden"
+              className="text-center w-full max-w-3xl border border-brand-gold/20 bg-brand-gold/[0.02] p-8 md:p-20 backdrop-blur-3xl shadow-2xl relative overflow-hidden rounded-sm"
             >
-              {/* Decorative Shine */}
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-gold to-transparent opacity-50" />
 
               <motion.div 
                 initial={{ rotate: -10, opacity: 0 }}
                 animate={{ rotate: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="inline-flex p-8 rounded-full bg-brand-gold/10 text-brand-gold mb-10 border border-brand-gold/20"
+                className="inline-flex p-6 md:p-8 rounded-full bg-brand-gold/10 text-brand-gold mb-8 md:mb-10 border border-brand-gold/20"
               >
-                <CheckCircle2 size={48} strokeWidth={0.5} />
+                <CheckCircle2 size={32} strokeWidth={1} className="md:w-12 md:h-12" />
               </motion.div>
               
-              <h3 className="text-5xl md:text-7xl font-serif mb-6 italic">Curation Complete</h3>
+              <h3 className="text-3xl md:text-7xl font-serif mb-4 md:mb-6 italic">Curation Complete</h3>
               
-              <div className="text-gray-400 mb-12 font-light text-lg leading-relaxed max-w-lg mx-auto space-y-2">
+              <div className="text-gray-400 mb-8 md:mb-12 font-light text-sm md:text-lg leading-relaxed max-w-lg mx-auto space-y-2">
                 <p>We have identified a selection for <span className="text-white font-medium capitalize">{selections.recipient}</span>.</p>
                 <p>Perfect for a <span className="text-brand-gold font-serif italic">{selections.style}</span> style <span className="text-white font-medium capitalize">{selections.occasion}</span>.</p>
               </div>
               
-              <div className="flex flex-col sm:flex-row justify-center gap-6">
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <button 
                   onClick={finalizeCuration}
-                  className="relative group bg-brand-gold text-brand-dark px-16 py-6 uppercase tracking-[0.4em] text-[11px] font-bold hover:bg-white transition-all duration-700 shadow-[0_20px_50px_rgba(197,158,85,0.3)] overflow-hidden"
+                  className="relative group bg-brand-gold text-brand-dark px-10 py-4 md:px-16 md:py-6 uppercase tracking-[0.3em] text-[10px] md:text-[11px] font-bold hover:bg-white transition-all duration-500 overflow-hidden w-full sm:w-auto"
                 >
                   <span className="relative z-10 flex items-center justify-center gap-4">
                     Reveal Selection <ArrowRight size={16} />
@@ -187,10 +184,10 @@ const GiftGuideScreen = () => {
 
                 <button 
                   onClick={shareCuration}
-                  className="flex items-center justify-center gap-3 p-6 border border-white/10 hover:border-brand-gold/50 text-white hover:text-brand-gold transition-colors min-w-[160px]"
+                  className="flex items-center justify-center gap-3 p-4 md:p-6 border border-white/10 hover:border-brand-gold/50 text-white hover:text-brand-gold transition-colors w-full sm:w-auto sm:min-w-[160px]"
                 >
                   {copied ? (
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-green-400">Link Copied</span>
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-green-400">Copied</span>
                   ) : (
                     <>
                       <Share2 size={16} />
@@ -211,40 +208,47 @@ const GiftGuideScreen = () => {
               className="w-full max-w-4xl"
             >
               {/* Question Header */}
-              <div className="text-center mb-16">
-                <span className="text-brand-gold text-[10px] uppercase tracking-[0.6em] font-bold mb-4 block">
+              <div className="text-center mb-8 md:mb-16 px-2">
+                <span className="text-brand-gold text-[9px] md:text-[10px] uppercase tracking-[0.4em] font-bold mb-4 block">
                   Step 0{step} / 04
                 </span>
-                <h2 className="text-4xl md:text-6xl font-serif italic mb-4">{currentQuestion.title}</h2>
-                <p className="text-gray-400 font-light">{currentQuestion.subtitle}</p>
+                <h2 className="text-3xl md:text-6xl font-serif italic mb-3 md:mb-4">{currentQuestion.title}</h2>
+                <p className="text-gray-400 font-light text-sm md:text-base">{currentQuestion.subtitle}</p>
               </div>
 
-              {/* Options Grid */}
-              <div className={`grid gap-6 ${currentQuestion.options.length > 3 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 md:grid-cols-3'}`}>
+              {/* Options Grid: 1 Col Mobile -> 2 Col Tablet -> 3 Col Desktop */}
+              <div className={`grid gap-4 md:gap-6 ${currentQuestion.options.length > 3 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-3'}`}>
                 {currentQuestion.options.map((opt) => (
                   <button 
                     key={opt.value}
                     onClick={() => handleSelection(currentQuestion.key, opt.value)}
-                    className="group relative flex flex-col items-center justify-center p-10 bg-white/[0.02] border border-white/5 hover:border-brand-gold/40 hover:bg-white/[0.04] transition-all duration-500 rounded-sm"
+                    className="group relative flex flex-row sm:flex-col items-center sm:justify-center justify-start p-6 md:p-10 bg-white/[0.02] border border-white/5 hover:border-brand-gold/40 hover:bg-white/[0.04] transition-all duration-300 rounded-sm text-left sm:text-center gap-6 sm:gap-0"
                   >
                     {/* Icon Handling */}
                     {opt.icon && (
-                      <div className="mb-6 text-gray-500 group-hover:text-brand-gold transition-colors duration-500 group-hover:scale-110 transform">
-                        <opt.icon size={32} strokeWidth={1} />
+                      <div className="text-gray-500 group-hover:text-brand-gold transition-colors duration-300 group-hover:scale-110 transform sm:mb-6 shrink-0">
+                        <opt.icon size={24} className="md:w-8 md:h-8" strokeWidth={1} />
                       </div>
                     )}
                     
-                    <span className="text-sm font-serif tracking-widest uppercase mb-2">{opt.label}</span>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-serif tracking-widest uppercase mb-1 sm:mb-2">{opt.label}</span>
+                      {opt.desc && (
+                        <span className="text-[10px] text-gray-500 font-light leading-snug sm:hidden block">
+                          {opt.desc}
+                        </span>
+                      )}
+                    </div>
                     
-                    {/* Description if available */}
+                    {/* Desktop Hover Description */}
                     {opt.desc && (
-                      <span className="text-[10px] text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-500 absolute bottom-4">
+                      <span className="hidden sm:block text-[10px] text-gray-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-500 absolute bottom-4">
                         {opt.desc}
                       </span>
                     )}
 
                     {/* Active Indicator Line */}
-                    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-brand-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-brand-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
                   </button>
                 ))}
               </div>
@@ -255,7 +259,7 @@ const GiftGuideScreen = () => {
 
       {/* Progress Footer */}
       {!isProcessing && step < 5 && (
-        <div className="w-full max-w-md mx-auto px-6 pb-12 flex gap-2">
+        <div className="w-full max-w-md mx-auto px-6 mt-8 md:mt-0 pb-8 md:pb-12 flex gap-2">
           {[1, 2, 3, 4].map((i) => (
             <div 
               key={i} 

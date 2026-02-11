@@ -104,7 +104,7 @@ const Navbar = ({ onCartOpen }) => {
   // --- CONFIG ---
   const navLinks = {
     shop: [
-      { label: 'Shop', path: '/shop' },
+      { label: 'Shop All', path: '/shop-all' },
       { label: 'Watches', path: '/watches' },
       { label: 'Jewelry', path: '/jewelry' },
     ],
